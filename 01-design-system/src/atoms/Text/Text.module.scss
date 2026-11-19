@@ -1,0 +1,31 @@
+.text {
+  margin: 0;
+  font-family: var(--font-sans);
+  line-height: 1.4;
+}
+
+// Sizes: generated from the token scale.
+@each $size in sm, md, lg, xl, 2xl, 3xl {
+  .size-#{$size} {
+    font-size: var(--text-#{$size});
+  }
+}
+
+// Big display text reads better slightly tighter.
+.size-2xl,
+.size-3xl {
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+@each $tone, $token in (default: fg, muted: fg-muted, accent: accent, success: success, danger: danger) {
+  .tone-#{$tone} {
+    color: var(--color-#{$token});
+  }
+}
+
+@each $weight in regular, medium, bold {
+  .weight-#{$weight} {
+    font-weight: var(--weight-#{$weight});
+  }
+}
