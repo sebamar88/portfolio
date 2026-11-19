@@ -1,0 +1,15 @@
+.field {
+  display: grid;
+  gap: var(--space-1);
+  font-family: var(--font-sans);
+}
+
+.label {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  color: var(--color-fg);
+}
+
+.required {
+  color: var(--color-danger);
+}
