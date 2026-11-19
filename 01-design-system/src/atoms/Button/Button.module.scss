@@ -1,0 +1,74 @@
+@use '../../styles/mixins';
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  border: 1px solid transparent;
+  border-radius: var(--radius-full);
+  font-family: var(--font-sans);
+  font-weight: var(--weight-medium);
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    box-shadow 150ms ease,
+    filter 150ms ease;
+
+  @include mixins.focus-ring;
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  &:not(:disabled):hover {
+    filter: brightness(1.1);
+  }
+}
+
+// ---- Sizes ----
+.sm {
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--text-sm);
+}
+
+.md {
+  padding: var(--space-3) var(--space-6);
+  font-size: var(--text-md);
+}
+
+// ---- Variants ----
+.primary {
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+}
+
+.secondary {
+  background: transparent;
+  color: var(--color-fg);
+  border-color: var(--color-border);
+
+  &:not(:disabled):hover {
+    filter: none;
+    background: var(--color-surface);
+  }
+}
+
+.accent {
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+
+  &:not(:disabled):hover {
+    box-shadow: var(--glow-accent);
+  }
+}
+
+.danger {
+  background: var(--color-danger);
+  color: var(--color-on-danger);
+
+  &:not(:disabled):hover {
+    box-shadow: var(--glow-danger);
+  }
+}
