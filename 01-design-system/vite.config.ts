@@ -12,6 +12,14 @@ const dirname = import.meta.dirname;
 export default defineConfig({
   plugins: [react()],
   test: {
+    coverage: {
+      provider: 'v8',
+      include: ['src/**/*.{ts,tsx}'],
+      exclude: ['src/**/*.stories.{ts,tsx}', 'src/**/*.test.ts', 'src/index.ts', 'src/**/*.d.ts'],
+      reporter: ['text-summary', 'html', 'json-summary'],
+      reportsDirectory: 'coverage',
+      thresholds: { lines: 95, functions: 95, branches: 90, statements: 95 },
+    },
     projects: [{
       // Pure logic (formatters, helpers): plain Node, no browser, milliseconds per test.
       extends: true,

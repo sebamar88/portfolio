@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { expect, waitFor } from 'storybook/test'
 import { Avatar } from './Avatar'
+import { getAvatarColorIndex } from './avatarUtils'
 
 // Inline SVG: no network, so the story is deterministic offline and in CI.
 const svg =
@@ -72,8 +73,18 @@ export const Sizes: Story = {
   },
 }
 
-// One name per color slot 0..5 (picked by running the hash); the play check proves full coverage.
-const names = ['Carla', 'Maria', 'Gala', 'Ana', 'Elena', 'Bruno']
+// Names are derived from the hash itself, so changing the hash can't silently break the 6-color check.
+const candidates = ['Carla', 'Maria', 'Gala', 'Ana', 'Elena', 'Bruno', 'Diego', 'Lucia', 'Pablo', 'Sofia', 'Juan', 'Laura', 'Mateo', 'Julia', 'Hugo', 'Valeria', 'Tomas', 'Nora', 'Pedro', 'Irene', 'Marcos', 'Clara', 'Felipe', 'Rosa']
+
+function namesForAllColors(count = 6): string[] {
+  return Array.from({ length: count }, (_, index) => {
+    const name = candidates.find((n) => getAvatarColorIndex(n, count) === index)
+    if (!name) throw new Error(`No candidate name maps to avatar color ${index}; add more candidates.`)
+    return name
+  })
+}
+
+const names = namesForAllColors()
 
 export const AllColors: Story = {
   render: () => (

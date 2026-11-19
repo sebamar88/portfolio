@@ -54,9 +54,13 @@ jobs:
       - name: Type check
         run: pnpm build
 
-      # Unit tests (Node) + story tests (Chromium) with a11y checks in error mode.
-      - name: Test
-        run: pnpm test
+      # Unit tests (Node) + story tests (Chromium) with a11y checks in error mode, plus coverage thresholds.
+      - name: Test with coverage
+        run: pnpm test:coverage
+
+      - name: Coverage summary
+        if: always() && hashFiles('01-design-system/coverage/coverage-summary.json') != ''
+        run: node scripts/coverage-summary.mjs >> "$GITHUB_STEP_SUMMARY"
 
       - name: Build Storybook
         run: pnpm build-storybook
