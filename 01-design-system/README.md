@@ -1,16 +1,22 @@
 # Expenses Design System
 
+[![Design system CI](https://github.com/sebamar88/portfolio/actions/workflows/design-system.yml/badge.svg)](https://github.com/sebamar88/portfolio/actions/workflows/design-system.yml)
+
 Accessible React components for a shared-expenses app (groups, expenses, balances, settling debts).
 Dark first, built on design tokens, and every component is tested in a real browser with
 accessibility checks that fail the build.
+
+![The ExpenseList organism in the dark Storybook catalog](docs/storybook.png)
 
 **Live Storybook:** [sebamar88.github.io/portfolio](https://sebamar88.github.io/portfolio/) · Part of the [portfolio monorepo](https://github.com/sebamar88/portfolio) (project 1 of 10).
 
 ## What this project demonstrates
 
-- **Atomic design** with a real hierarchy: tokens → atoms → molecules.
+- **Atomic design** with a real hierarchy: tokens → atoms → molecules → organisms.
 - **Accessibility as a test, not a review comment:** axe runs on every story in `error` mode.
 - **Component tests:** every Storybook story is also a Vitest test running in headless Chromium.
+- **Visual regression tests:** 21 screenshots (every component, dark and light) compared pixel by pixel in CI.
+- **Coverage gate:** CI fails if coverage drops below the thresholds (currently 100% lines, 95% branches).
 - **Design tokens and theming:** dark and light themes from the same components.
 
 ## Quick start
@@ -19,6 +25,9 @@ accessibility checks that fail the build.
 pnpm install
 pnpm storybook   # catalog at http://localhost:6006
 pnpm test        # unit tests (Node) + story tests (Chromium, with a11y checks)
+pnpm test:coverage    # same, with coverage thresholds
+pnpm test:visual      # screenshot tests, inside Docker (see below)
+pnpm test:visual:update  # regenerate the baselines after an intended visual change
 pnpm build       # type check
 pnpm lint
 ```
@@ -36,6 +45,7 @@ pnpm lint
 | Atom | `Badge` | Tinted pill, "live" dot that respects reduced motion |
 | Molecule | `TextField` | Label + `Input` + hint + error, wired with `aria-describedby` |
 | Molecule | `ExpenseRow` | Avatar, description, who paid, date and your share of the expense |
+| Organism | `ExpenseList` | A group's feed: net balance, expenses grouped by day, empty state |
 
 Each component has an auto-generated **Docs** page (props table from its types and JSDoc) and the
 catalog opens with a **Get started** guide written in MDX.
@@ -85,6 +95,18 @@ recognizes, with no platform lock-in. If the kit ever needs to be installed from
 next step is publishing it as an npm package (Vite library mode + Changesets) from the existing
 `src/index.ts` entry point.
 
+**Visual tests run in Docker.** Screenshots differ between machines (fonts, antialiasing), which
+makes visual tests flaky. Baselines are generated and compared only inside the official Playwright
+image (`mcr.microsoft.com/playwright:v1.65.1-noble`), locally and in CI, so the pixels match. They
+render the real stories (`composeStories`), with reduced motion and fonts loaded, and are kept out
+of `pnpm test` behind a `VISUAL=1` switch. Changing one token color fails the affected screenshots.
+
+**Coverage thresholds, not a coverage target.** Thresholds sit a few points below the measured
+values: a real regression fails CI, a small refactor doesn't. The summary is posted on each CI run.
+
+**Storybook matches the product.** The catalog UI and Docs pages use the same dark palette as the
+components (`.storybook/theme.ts`).
+
 **pnpm build scripts.** pnpm blocks dependency install scripts by default. `pnpm-workspace.yaml`
 allows only `esbuild` (needed by Vite) and explicitly denies `@parcel/watcher` (only used by the Sass
 CLI, which Vite doesn't need).
@@ -94,10 +116,9 @@ CLI, which Vite doesn't need).
 - Not published to npm; consumed from source inside the monorepo.
 - `ExpenseRow` is intentionally non-interactive; apps wrap it in a link or button, which avoids
   nested interactive elements.
-- The `Avatar/AllColors` story uses names picked to hit all six colors; changing the hash function
-  would break it without a real bug.
-- No visual regression tests yet (screenshots were checked manually).
-- Storybook's Docs pages use its default light chrome, while stories default to dark.
+- Visual baselines are Linux-only by design: run them through `pnpm test:visual` (Docker), never
+  on the host.
+- In Docs pages the page stays dark; light stories render light inside their own frame.
 
 ## Project structure
 
@@ -107,6 +128,8 @@ src/
   styles/      shared Sass mixins (focus ring, visually hidden)
   atoms/       Button, Text, Input, Money, Avatar, Badge
   molecules/   TextField, ExpenseRow
+  organisms/   ExpenseList
+  visual/      screenshot tests + committed baselines
   index.ts     public entry point
   introduction.mdx
 ```

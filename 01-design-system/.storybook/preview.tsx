@@ -23,12 +23,12 @@ const preview: Preview = {
 
   decorators: [
     (Story, context) => {
-      // The page background follows the toolbar theme; the wrapper follows the story's own theme.
-      // In Docs many stories render on one page (some pin light), so the page stays dark there and
-      // only each story's own wrapper switches; tokens only define light as an override of dark.
-      document.documentElement.dataset.theme = context.viewMode === 'docs' ? 'dark' : context.globals.theme
-      // A story's own pinned theme wins; in Docs the shared toolbar global is unreliable.
-      const storyTheme = context.storyGlobals?.theme ?? (context.viewMode === 'docs' ? 'dark' : context.globals.theme)
+      // In Docs, many stories share one page and some pin `theme: 'light'`. A pinned story can leak
+      // its globals into that shared page, so Docs always uses dark as the page theme.
+      const pageTheme = context.viewMode === 'docs' ? 'dark' : context.globals.theme
+      // Each story's wrapper uses the theme it pins (e.g. the *Light stories), else the page theme.
+      const storyTheme = context.storyGlobals?.theme ?? pageTheme
+      document.documentElement.dataset.theme = pageTheme
       return (
       <div
         data-theme={storyTheme}
