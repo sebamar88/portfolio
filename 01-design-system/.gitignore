@@ -27,3 +27,6 @@ dist-ssr
 storybook-static
 
 coverage
+
+# Visual regression failure artifacts (baselines in src/visual/__screenshots__ ARE committed)
+.vitest

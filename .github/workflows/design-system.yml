@@ -71,10 +71,39 @@ jobs:
         with:
           path: 01-design-system/storybook-static
 
+  # Screenshots only match inside the pinned Playwright image (same one as scripts/visual-docker.sh,
+  # which devs run locally via `pnpm test:visual`). Keep the tag in sync with the playwright version.
+  visual:
+    name: Visual regression
+    runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/playwright:v1.65.1-noble
+      options: --ipc=host
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 12.4.1
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Visual regression tests
+        run: pnpm test:visual:ci
+
+      - name: Upload actual and diff images
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: visual-regression-diffs
+          path: 01-design-system/.vitest/attachments
+          if-no-files-found: ignore
+
   deploy:
     name: Deploy Storybook
     # Only after every check passed, and never from a pull request.
-    needs: check
+    needs: [check, visual]
     if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     permissions:

@@ -9,7 +9,10 @@
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "test": "vitest run",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "test:visual": "bash scripts/visual-docker.sh",
+    "test:visual:update": "bash scripts/visual-docker.sh update",
+    "test:visual:ci": "VISUAL=1 vitest run"
   },
   "dependencies": {
     "react": "^19.3.1",
@@ -33,6 +36,7 @@
     "storybook": "^10.6.7",
     "typescript": "~7.0.2",
     "vite": "^8.3.6",
-    "vitest": "^5.1.1"
+    "vitest": "^5.1.1",
+    "vitest-browser-react": "^2.3.0"
   }
 }
