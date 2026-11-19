@@ -4,11 +4,19 @@ on:
   push:
     branches: [main]
     paths:
-      - '01-design-system/**'
+      - 'packages/design-system/**'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - 'pnpm-workspace.yaml'
+      - '.github/pages/**'
       - '.github/workflows/design-system.yml'
   pull_request:
     paths:
-      - '01-design-system/**'
+      - 'packages/design-system/**'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - 'pnpm-workspace.yaml'
+      - '.github/pages/**'
       - '.github/workflows/design-system.yml'
   workflow_dispatch:
 
@@ -22,7 +30,7 @@ permissions:
 
 defaults:
   run:
-    working-directory: 01-design-system
+    working-directory: packages/design-system
 
 jobs:
   check:
@@ -39,10 +47,12 @@ jobs:
         with:
           node-version: 24
           cache: pnpm
-          cache-dependency-path: 01-design-system/pnpm-lock.yaml
+          cache-dependency-path: pnpm-lock.yaml
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+        # One lockfile for the whole workspace: always install from the repo root.
+        working-directory: .
 
       # Story tests run in a real Chromium; --with-deps adds the OS libraries it needs.
       - name: Install Playwright Chromium
@@ -59,17 +69,28 @@ jobs:
         run: pnpm test:coverage
 
       - name: Coverage summary
-        if: always() && hashFiles('01-design-system/coverage/coverage-summary.json') != ''
+        if: always() && hashFiles('packages/design-system/coverage/coverage-summary.json') != ''
         run: node scripts/coverage-summary.mjs >> "$GITHUB_STEP_SUMMARY"
 
       - name: Build Storybook
         run: pnpm build-storybook
 
-      - name: Upload Storybook for GitHub Pages
+      # ONE site, ONE deploy: GitHub Pages serves a single artifact, so every static module must be
+      # assembled into this same _site directory (landing page at /, each module under /<module>/).
+      # When more static modules exist, add their build output here as _site/<module>/.
+      - name: Assemble GitHub Pages site
+        if: github.event_name != 'pull_request'
+        working-directory: .
+        run: |
+          mkdir -p _site/design-system
+          cp .github/pages/index.html _site/index.html
+          cp -r packages/design-system/storybook-static/. _site/design-system/
+
+      - name: Upload site for GitHub Pages
         if: github.event_name != 'pull_request'
         uses: actions/upload-pages-artifact@v3
         with:
-          path: 01-design-system/storybook-static
+          path: _site
 
   # Screenshots only match inside the pinned Playwright image (same one as scripts/visual-docker.sh,
   # which devs run locally via `pnpm test:visual`). Keep the tag in sync with the playwright version.
@@ -88,6 +109,8 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+        # One lockfile for the whole workspace: always install from the repo root.
+        working-directory: .
 
       - name: Visual regression tests
         run: pnpm test:visual:ci
@@ -97,11 +120,11 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: visual-regression-diffs
-          path: 01-design-system/.vitest/attachments
+          path: packages/design-system/.vitest/attachments
           if-no-files-found: ignore
 
   deploy:
-    name: Deploy Storybook
+    name: Deploy site (landing page + Storybook)
     # Only after every check passed, and never from a pull request.
     needs: [check, visual]
     if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'

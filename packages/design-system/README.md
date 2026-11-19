@@ -8,7 +8,7 @@ accessibility checks that fail the build.
 
 ![The ExpenseList organism in the dark Storybook catalog](docs/storybook.png)
 
-**Live Storybook:** [sebamar88.github.io/portfolio](https://sebamar88.github.io/portfolio/) · Part of the [portfolio monorepo](https://github.com/sebamar88/portfolio) (project 1 of 10).
+**Live Storybook:** [sebamar88.github.io/portfolio/design-system](https://sebamar88.github.io/portfolio/design-system/) · Part of the [portfolio monorepo](https://github.com/sebamar88/portfolio) (module 1 of 8).
 
 ## What this project demonstrates
 
@@ -22,7 +22,8 @@ accessibility checks that fail the build.
 ## Quick start
 
 ```sh
-pnpm install
+pnpm install     # once, at the repo root (pnpm workspace)
+cd packages/design-system   # or prefix commands with: pnpm --filter @portfolio/design-system
 pnpm storybook   # catalog at http://localhost:6006
 pnpm test        # unit tests (Node) + story tests (Chromium, with a11y checks)
 pnpm test:coverage    # same, with coverage thresholds
@@ -107,7 +108,7 @@ values: a real regression fails CI, a small refactor doesn't. The summary is pos
 **Storybook matches the product.** The catalog UI and Docs pages use the same dark palette as the
 components (`.storybook/theme.ts`).
 
-**pnpm build scripts.** pnpm blocks dependency install scripts by default. `pnpm-workspace.yaml`
+**pnpm build scripts.** pnpm blocks dependency install scripts by default. the root `pnpm-workspace.yaml`
 allows only `esbuild` (needed by Vite) and explicitly denies `@parcel/watcher` (only used by the Sass
 CLI, which Vite doesn't need).
 

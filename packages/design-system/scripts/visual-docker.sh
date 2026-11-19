@@ -7,8 +7,9 @@
 #
 # Keep IMAGE in sync with the playwright version in package.json and with the CI job.
 #
-# Dependencies are installed INSIDE the container: node_modules and the pnpm store live in named
-# Docker volumes mounted over the project's node_modules, so the host node_modules is never touched.
+# Dependencies are installed INSIDE the container, at the workspace root (the repo has ONE lockfile):
+# node_modules directories and the pnpm store live in named Docker volumes mounted over the host
+# ones, so the host node_modules is never touched.
 # The container runs as root; generated files are handed back to the host user at the end.
 set -euo pipefail
 
@@ -17,8 +18,8 @@ PNPM_VERSION="12.4.1"
 mode="${1:-compare}"
 
 here="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-repo="$(dirname "$here")"
-project="$(basename "$here")"
+repo="$(cd "$here/../.." && pwd)"
+project="${here#"$repo"/}"   # packages/design-system
 
 case "$mode" in
   compare) vitest_args="" ;;
@@ -30,15 +31,18 @@ docker run --rm --ipc=host \
   -e CI=1 -e HOST_UID="$(id -u)" -e HOST_GID="$(id -g)" -e VITEST_ARGS="$vitest_args" \
   -e PNPM_VERSION="$PNPM_VERSION" \
   -v "$repo":/repo \
+  -v design-system-visual-root-node-modules:/repo/node_modules \
   -v design-system-visual-node-modules:/repo/"$project"/node_modules \
   -v design-system-visual-pnpm-store:/pnpm-store \
-  -w /repo/"$project" \
+  -e PROJECT="$project" \
+  -w /repo \
   "$IMAGE" \
   bash -c '
     set -e
     npm install -g "pnpm@$PNPM_VERSION" >/dev/null
     pnpm config set store-dir /pnpm-store
     pnpm install --frozen-lockfile
+    cd "/repo/$PROJECT"
     status=0
     # shellcheck disable=SC2086
     pnpm test:visual:ci $VITEST_ARGS || status=$?

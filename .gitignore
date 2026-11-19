@@ -1,2 +1,5 @@
 # Local-only planning notes (kept out of the public repo).
 /docs/
+
+node_modules
+_site

@@ -1,8 +1,12 @@
 {
-  "name": "expenses-design-system",
+  "name": "@portfolio/design-system",
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./tokens.scss": "./src/tokens/tokens.scss"
+  },
   "scripts": {
     "build": "tsc -b",
     "lint": "oxlint",
