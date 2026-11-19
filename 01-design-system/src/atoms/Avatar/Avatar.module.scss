@@ -1,0 +1,44 @@
+.avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  overflow: hidden;
+  border-radius: var(--radius-full);
+  color: var(--color-on-avatar);
+  font-weight: var(--weight-bold);
+  line-height: 1;
+  user-select: none;
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  // Crop instead of squashing non-square photos.
+  object-fit: cover;
+}
+
+// Fixed box sizes in rem so avatars scale with the user's font settings.
+.sm {
+  width: 1.5rem;
+  height: 1.5rem;
+  font-size: 0.625rem;
+}
+
+.md {
+  width: 2.5rem;
+  height: 2.5rem;
+  font-size: var(--text-sm);
+}
+
+.lg {
+  width: 3.5rem;
+  height: 3.5rem;
+  font-size: var(--text-lg);
+}
+
+@for $i from 1 through 6 {
+  .color#{$i} {
+    background: var(--color-avatar-#{$i});
+  }
+}
