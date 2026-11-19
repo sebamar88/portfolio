@@ -10,5 +10,10 @@ pnpm --filter @portfolio/api build   # type check + SWC build into dist/
 pnpm --filter @portfolio/api start   # run the built app
 ```
 
-CommonJS on purpose: Nest + SWC + Vitest work without `.js` import suffixes. Vitest uses SWC (not
-esbuild) because Nest's DI needs decorator metadata.
+**CommonJS on purpose.** `package.json` has no `"type"` and `tsconfig.json` uses `nodenext`, so Node
+treats the output as CommonJS: Nest and SWC work without `.js` suffixes on every import.
+
+**Decorator metadata.** Nest's dependency injection reads constructor parameter types at runtime,
+from metadata the compiler emits for decorators. `nest build` emits it with SWC (`.swcrc`); tests
+emit it with Vite's Oxc transform (`oxc.decorator` in `vitest.config.mts`).
+`test/decorator-metadata.test.ts` fails if that setting breaks.
