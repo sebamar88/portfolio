@@ -1,0 +1,25 @@
+@use '../../styles/mixins';
+
+.money {
+  // Same-width digits: amounts in a list line up in columns and don't jitter when they change.
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.owed {
+  color: var(--color-success);
+  font-weight: var(--weight-medium);
+}
+
+.owe {
+  color: var(--color-danger);
+  font-weight: var(--weight-medium);
+}
+
+.settled {
+  color: var(--color-fg-muted);
+}
+
+.srOnly {
+  @include mixins.visually-hidden;
+}
