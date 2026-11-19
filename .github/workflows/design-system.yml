@@ -1,0 +1,84 @@
+name: Design system
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '01-design-system/**'
+      - '.github/workflows/design-system.yml'
+  pull_request:
+    paths:
+      - '01-design-system/**'
+      - '.github/workflows/design-system.yml'
+  workflow_dispatch:
+
+# A newer push cancels a stale run of the same branch instead of queueing behind it.
+concurrency:
+  group: design-system-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    working-directory: 01-design-system
+
+jobs:
+  check:
+    name: Lint, type check, test, build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 12.4.1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+          cache-dependency-path: 01-design-system/pnpm-lock.yaml
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # Story tests run in a real Chromium; --with-deps adds the OS libraries it needs.
+      - name: Install Playwright Chromium
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Type check
+        run: pnpm build
+
+      # Unit tests (Node) + story tests (Chromium) with a11y checks in error mode.
+      - name: Test
+        run: pnpm test
+
+      - name: Build Storybook
+        run: pnpm build-storybook
+
+      - name: Upload Storybook for GitHub Pages
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: 01-design-system/storybook-static
+
+  deploy:
+    name: Deploy Storybook
+    # Only after every check passed, and never from a pull request.
+    needs: check
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

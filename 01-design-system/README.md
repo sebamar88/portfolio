@@ -4,7 +4,7 @@ Accessible React components for a shared-expenses app (groups, expenses, balance
 Dark first, built on design tokens, and every component is tested in a real browser with
 accessibility checks that fail the build.
 
-**Live Storybook:** _deploy pending_ · Part of the [portfolio monorepo](https://github.com/sebamar88/portfolio) (project 1 of 10).
+**Live Storybook:** [sebamar88.github.io/portfolio](https://sebamar88.github.io/portfolio/) · Part of the [portfolio monorepo](https://github.com/sebamar88/portfolio) (project 1 of 10).
 
 ## What this project demonstrates
 
