@@ -1,0 +1,144 @@
+/*
+ * Design tokens. Two layers:
+ *  1. Primitives ($palette-*): Sass variables. They exist only at compile time, so no component
+ *     can reach for "violet-400" at runtime; the role rule is enforced by the tooling, not by discipline.
+ *  2. Semantic (--color-*, --space-*, ...): CSS custom properties, because themes switch at runtime
+ *     (data-theme attribute) and Sass variables cannot change after compilation.
+ *
+ * Dark is the default theme (finance-app look: near-black navy, neon accents, pill buttons).
+ * Light is opt-in via [data-theme='light'].
+ */
+@use 'sass:color';
+
+// ---- Primitives ----
+$white: #ffffff;
+$ink-950: #0a0b14;
+$ink-900: #141627;
+$ink-800: #1d2036;
+$ink-600: #2a2d45;
+$ink-300: #a0a4bd;
+$ink-100: #f5f6fa;
+$slate-50: #f8fafc;
+$slate-200: #e2e8f0;
+$slate-600: #475569;
+$slate-900: #0f172a;
+$violet-400: #c084fc;
+$violet-600: #7c3aed;
+$pink-400: #f472b6;
+$neon-green: #3ee58a;
+$neon-red: #ff5c7a;
+$green-700: #15803d;
+$red-600: #dc2626;
+// Avatar backgrounds: all light enough for $ink-950 text (AA) in both themes.
+$avatar-violet: #c084fc;
+$avatar-pink: #f472b6;
+$avatar-green: #3ee58a;
+$avatar-sky: #5cc8ff;
+$avatar-amber: #fbbf24;
+$avatar-coral: #ff8a65;
+$avatar-violet-soft: #d8b4fe;
+$avatar-pink-soft: #f9a8d4;
+$avatar-green-soft: #86efac;
+$avatar-sky-soft: #7dd3fc;
+$avatar-amber-soft: #fcd34d;
+$avatar-coral-soft: #fdba9a;
+
+@function glow($c, $blur, $alpha) {
+  @return 0 0 0 1px $c, 0 0 $blur color.change($c, $alpha: $alpha);
+}
+
+:root {
+  // ---- Semantic colors (dark theme = default) ----
+  color-scheme: dark;
+  --color-bg: #{$ink-950};
+  --color-surface: #{$ink-900};
+  --color-surface-raised: #{$ink-800};
+  --color-border: #{$ink-600};
+  --color-fg: #{$ink-100};
+  --color-fg-muted: #{$ink-300};
+
+  // Primary = high-contrast pill (white on dark). Accent = brand violet.
+  --color-primary: #{$white};
+  --color-on-primary: #{$ink-950};
+  --color-accent: #{$violet-400};
+  --color-on-accent: #{$ink-950};
+  // Money semantics: success = "you are owed", danger = "you owe".
+  --color-success: #{$neon-green};
+  --color-on-success: #{$ink-950};
+  --color-danger: #{$neon-red};
+  --color-on-danger: #{$ink-950};
+  --color-focus: #{$violet-400};
+  // Avatars: one fixed dark ink on every background keeps contrast provable per pair.
+  --color-avatar-1: #{$avatar-violet};
+  --color-avatar-2: #{$avatar-pink};
+  --color-avatar-3: #{$avatar-green};
+  --color-avatar-4: #{$avatar-sky};
+  --color-avatar-5: #{$avatar-amber};
+  --color-avatar-6: #{$avatar-coral};
+  --color-on-avatar: #{$ink-950};
+
+  // ---- Effects ----
+  --gradient-accent: linear-gradient(90deg, #{$violet-400}, #{$pink-400});
+  --glow-accent: #{glow($violet-400, 24px, 0.35)};
+  --glow-success: #{glow($neon-green, 24px, 0.3)};
+  --glow-danger: #{glow($neon-red, 24px, 0.3)};
+
+  // ---- Spacing: 4px scale ----
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+
+  // ---- Typography ----
+  --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', Menlo, monospace;
+  --text-sm: 0.875rem;
+  --text-md: 1rem;
+  --text-lg: 1.25rem;
+  --text-xl: 1.5rem;
+  --text-2xl: 2rem;
+  --text-3xl: 2.75rem;
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-bold: 700;
+
+  // ---- Shape ----
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 1rem;
+  --radius-full: 9999px;
+}
+
+// Light theme: only semantic roles are remapped.
+[data-theme='light'] {
+  color-scheme: light;
+  --color-bg: #{$white};
+  --color-surface: #{$slate-50};
+  --color-surface-raised: #{$white};
+  --color-border: #{$slate-200};
+  --color-fg: #{$slate-900};
+  --color-fg-muted: #{$slate-600};
+
+  --color-primary: #{$slate-900};
+  --color-on-primary: #{$white};
+  --color-accent: #{$violet-600};
+  --color-on-accent: #{$white};
+  --color-success: #{$green-700};
+  --color-on-success: #{$white};
+  --color-danger: #{$red-600};
+  --color-on-danger: #{$white};
+  --color-focus: #{$violet-600};
+  --color-avatar-1: #{$avatar-violet-soft};
+  --color-avatar-2: #{$avatar-pink-soft};
+  --color-avatar-3: #{$avatar-green-soft};
+  --color-avatar-4: #{$avatar-sky-soft};
+  --color-avatar-5: #{$avatar-amber-soft};
+  --color-avatar-6: #{$avatar-coral-soft};
+  --color-on-avatar: #{$ink-950};
+
+  --glow-accent: #{glow($violet-600, 16px, 0.2)};
+  --glow-success: #{glow($green-700, 16px, 0.2)};
+  --glow-danger: #{glow($red-600, 16px, 0.2)};
+}

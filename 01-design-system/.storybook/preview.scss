@@ -1,0 +1,5 @@
+// Storybook-only: make the whole canvas follow the active theme.
+body {
+  margin: 0;
+  background: var(--color-bg);
+}
