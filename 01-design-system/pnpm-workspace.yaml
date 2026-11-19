@@ -1,0 +1,4 @@
+allowBuilds:
+  esbuild: true
+  # Only used by the sass CLI watcher; Vite does its own watching.
+  "@parcel/watcher": false
