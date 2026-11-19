@@ -1,0 +1,101 @@
+import { Meta, Title, Subtitle, Canvas } from '@storybook/addon-docs/blocks'
+import * as ButtonStories from './atoms/Button/Button.stories'
+import * as MoneyStories from './atoms/Money/Money.stories'
+import * as TextFieldStories from './molecules/TextField/TextField.stories'
+
+<Meta title="Get started" />
+
+<Title>Get started with the Expenses Design System</Title>
+
+<Subtitle>Accessible React components for a shared-expenses app, dark first.</Subtitle>
+
+This is the UI kit behind an app for splitting expenses between friends: groups, expenses,
+balances and settling debts. Every component is built from design tokens, tested in a real
+browser, and checked for accessibility on every run.
+
+<Canvas of={MoneyStories.InsideText} />
+
+## Principles
+
+- **Tokens, not values.** Components only use semantic tokens (`--color-accent`, `--space-4`),
+  never raw colors. A theme just remaps those roles, so dark and light share the same components.
+- **Accessibility is a test, not a review comment.** The a11y check runs in `error` mode: a
+  contrast or labeling problem fails the test suite, the same as a broken click handler.
+- **Native first.** Buttons are `<button>`, fields are `<input>`: focus, keyboard and disabled
+  behavior come from the browser instead of being rebuilt.
+- **Atomic design.** Atoms (`Text`, `Button`, `Input`, `Money`, `Avatar`, `Badge`) compose into
+  molecules (`TextField`). See the sidebar, which follows the same order.
+
+## Install
+
+This kit lives in the [portfolio monorepo](https://github.com/sebamar88/portfolio) and is not
+published to npm. To run it locally:
+
+```sh
+cd 01-design-system
+pnpm install
+pnpm storybook   # this catalog, at http://localhost:6006
+```
+
+## Usage
+
+**1. Load the tokens once**, at the root of your app. They define every CSS variable the
+components need.
+
+```tsx
+import './tokens/tokens.scss'
+```
+
+**2. Pick a theme.** Dark is the default. Set `data-theme="light"` on any element (usually
+`<html>`) to switch that subtree.
+
+```html
+<html data-theme="light">
+```
+
+**3. Import components from the package entry point**, never from internal paths.
+
+```tsx
+import { Button, TextField, Money } from './index'
+
+export function NewExpense() {
+  return (
+    <form>
+      <TextField label="Description" required />
+      <TextField label="Amount" prefix="$" suffix="USD" inputMode="decimal" />
+      <Button type="submit">Add expense</Button>
+    </form>
+  )
+}
+```
+
+<Canvas of={TextFieldStories.AllStates} />
+
+## Rules worth knowing
+
+| Rule | Why |
+| --- | --- |
+| Money is an **integer in minor units** (`123450` → `$1,234.50`) | Floats can't represent most decimals (`0.1 + 0.2 !== 0.3`). `formatMoney` throws on non-integers. |
+| `TextField` **requires** a `label` | A placeholder is not a label: it disappears while typing. |
+| Use `Input` alone only with an `aria-label` | The bare atom has no label of its own. |
+| `Text` takes `as` (semantics) and `size` (looks) separately | Pick heading levels for document structure, never for font size. |
+| `Button` defaults to `type="button"` | It never submits a surrounding form by accident. Pass `type="submit"` when you mean it. |
+| Balance meaning is never color only | `Money variant="balance"` adds a +/- sign and a screen-reader phrase. |
+
+<Canvas of={ButtonStories.AllVariants} />
+
+## Testing
+
+Every story is also a test. Interaction tests (`play` functions) and accessibility checks run in
+headless Chromium; pure helpers like `formatMoney` run as fast unit tests in Node.
+
+```sh
+pnpm test        # all tests, once
+pnpm build       # type check
+```
+
+## Where to go next
+
+- **Foundations → Tokens**: every color pair in both themes, with contrast checked.
+- **Atoms → Money → Docs**: the full props table, generated from the component's types and comments.
+- Use the **Theme** button in the toolbar to see any story in dark or light.

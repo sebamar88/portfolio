@@ -1,0 +1,11 @@
+// Public entry point: import everything from here, never from internal paths.
+export { Button, type ButtonProps, type ButtonVariant, type ButtonSize } from './atoms/Button/Button'
+export { Input, type InputProps } from './atoms/Input/Input'
+export { Text, type TextProps, type TextElement, type TextSize, type TextTone, type TextWeight } from './atoms/Text/Text'
+export { Money, type MoneyProps, type BalanceLabels } from './atoms/Money/Money'
+export { formatMoney, type FormatMoneyOptions } from './atoms/Money/formatMoney'
+export { Avatar, type AvatarProps } from './atoms/Avatar/Avatar'
+export { Badge, type BadgeProps } from './atoms/Badge/Badge'
+export { TextField, type TextFieldProps } from './molecules/TextField/TextField'
+export { ExpenseRow, type ExpenseRowProps, type ExpenseStatusLabels } from './molecules/ExpenseRow/ExpenseRow'
+export { formatExpenseDate } from './molecules/ExpenseRow/formatExpenseDate'
