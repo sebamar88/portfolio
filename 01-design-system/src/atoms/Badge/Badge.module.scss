@@ -1,0 +1,52 @@
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-full);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  line-height: 1.25;
+  white-space: nowrap;
+  // Each tone sets --tone; background and text derive from it.
+  // Text is nudged toward fg: the pure tone on its own tint misses AA in light theme.
+  color: color-mix(in srgb, var(--tone) 65%, var(--color-fg));
+  background: color-mix(in srgb, var(--tone) 15%, transparent);
+}
+
+// Neutral uses the main foreground: fg-muted on a tint can miss AA.
+.neutral {
+  --tone: var(--color-fg);
+}
+
+.accent {
+  --tone: var(--color-accent);
+}
+
+.success {
+  --tone: var(--color-success);
+}
+
+.danger {
+  --tone: var(--color-danger);
+}
+
+.dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: var(--radius-full);
+  background: currentColor;
+}
+
+// Pulse only for users who haven't asked for reduced motion (vestibular safety, WCAG 2.3.3).
+@media (prefers-reduced-motion: no-preference) {
+  .dot {
+    animation: pulse 1.6s ease-in-out infinite;
+  }
+}
+
+@keyframes pulse {
+  50% {
+    opacity: 0.35;
+  }
+}
