@@ -6,3 +6,5 @@ allowBuilds:
   esbuild: true
   # Only used by the sass CLI watcher; Vite does its own watching.
   "@parcel/watcher": false
+  # The native SWC binary ships as a platform optional dependency; the postinstall is only a fallback.
+  "@swc/core": false

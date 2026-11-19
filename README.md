@@ -11,7 +11,7 @@ frontend, backend, real-time, mobile, crypto and AI.
 | # | Module | Path | Stack | Status | Links |
 |---|--------|------|-------|--------|-------|
 | 1 | Design system | `packages/design-system` | React, SCSS Modules, Storybook | Done | [Storybook](https://sebamar88.github.io/portfolio/design-system/) · [README](packages/design-system/README.md) |
-| 2 | Contracts + Core API | `packages/contracts`, `apps/api` | NestJS, Postgres, Redis | Planned | — |
+| 2 | Contracts + Core API | `packages/contracts`, `apps/api` | NestJS, Postgres, Redis | In progress | — |
 | 3 | FX dashboard | `apps/dashboard` | Vite, React, TanStack | Planned | — |
 | 4 | Web app | `apps/web` | Next.js App Router | Planned | — |
 | 5 | Real-time | `apps/realtime` | NestJS, BullMQ, websockets | Planned | — |
