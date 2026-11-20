@@ -22,8 +22,8 @@ straight to the creditor and emits `DebtSettled`.
 
 Foundry is run through Docker (`ghcr.io/foundry-rs/foundry:stable`) via `scripts/forge.sh`
 (runs as your uid, so no root-owned files). CI uses `foundry-rs/foundry-toolchain`.
-`package.json` deliberately has no `test`/`build` scripts so `pnpm -r` in CI doesn't need
-Docker; use the Makefile instead.
+There is no `package.json`: this is a Foundry project, not a JavaScript package, so it stays out of
+the pnpm workspace and `pnpm -r` never needs Docker or Foundry.
 
 Dependencies (OpenZeppelin 5.1.0, forge-std 1.9.4) are managed with **Soldeer**: pinned in
 `foundry.toml` + `soldeer.lock` (checksums), downloaded into git-ignored `dependencies/`,
