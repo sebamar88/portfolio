@@ -8,3 +8,8 @@ allowBuilds:
   "@parcel/watcher": false
   # The native SWC binary ships as a platform optional dependency; the postinstall is only a fallback.
   "@swc/core": false
+  # Testcontainers' optional native speedups (SSH/CPU detection); the pure-JS fallbacks are fine for tests.
+  cpu-features: false
+  ssh2: false
+  # Its postinstall only checks its own version scheme.
+  protobufjs: false

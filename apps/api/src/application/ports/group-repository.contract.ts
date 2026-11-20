@@ -50,6 +50,16 @@ export function groupRepositoryContract(adapterName: string, makeRepository: () 
       expect((await repository.findById('g1'))?.memberIds).toEqual(['ana']);
     });
 
+    it('keeps existing members, in order, when a saved group gets more members and is saved again', async () => {
+      const group = Group.create({ id: 'g1', name: 'Trip' });
+      group.addMember('ana');
+      await repository.save(group);
+      group.addMember('bruno');
+      await repository.save(group);
+
+      expect((await repository.findById('g1'))?.memberIds).toEqual(['ana', 'bruno']);
+    });
+
     it('hands out independent copies: changing a found group does not change the stored one', async () => {
       await repository.save(Group.create({ id: 'g1', name: 'Trip' }));
 

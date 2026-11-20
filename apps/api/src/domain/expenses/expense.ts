@@ -19,6 +19,7 @@ export class Expense {
   // TypeScript compares types by shape, so without this a hand-written object literal with the same
   // public fields would also count as an Expense. A private field can only come from this class,
   // which makes only real instances (built and validated by create) acceptable.
+  // oxlint-disable-next-line no-unused-private-class-members -- it is never read on purpose: it is a type brand
   readonly #validated = true;
 
   private constructor(
