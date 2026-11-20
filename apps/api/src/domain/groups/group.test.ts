@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { Group } from './group';
+import { DuplicateMemberError } from './duplicate-member.error';
 import { InvalidGroupError } from './invalid-group.error';
 
 describe('Group', () => {
@@ -25,6 +26,9 @@ describe('Group', () => {
     const group = Group.create({ id: 'g1', name: 'Trip' });
     group.addMember('ana');
     expect(() => group.addMember('ana')).toThrow('already a member');
+    // A distinct type (still an InvalidGroupError) lets the HTTP layer answer 409 instead of 400.
+    expect(() => group.addMember('ana')).toThrow(DuplicateMemberError);
+    expect(() => group.addMember('ana')).toThrow(InvalidGroupError);
   });
 
   it('does not let callers change its members from outside', () => {

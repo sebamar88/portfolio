@@ -1,11 +1,14 @@
+import { Inject, Injectable } from '@nestjs/common';
 import { asc, eq } from 'drizzle-orm';
 import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import type { GroupRepository } from '../../../application/ports/group-repository';
 import { Group } from '../../../domain/groups/group';
+import { DATABASE } from '../../database/database.module';
 import { groupMembers, groups } from './schema';
 
+@Injectable()
 export class PostgresGroupRepository implements GroupRepository {
-  constructor(private readonly db: NodePgDatabase) {}
+  constructor(@Inject(DATABASE) private readonly db: NodePgDatabase) {}
 
   async save(group: Group): Promise<void> {
     // One transaction: if any step fails, everything is rolled back, so a group is never

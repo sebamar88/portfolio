@@ -1,3 +1,4 @@
+import { DuplicateMemberError } from './duplicate-member.error';
 import { InvalidGroupError } from './invalid-group.error';
 
 const MAX_NAME_LENGTH = 60;
@@ -43,7 +44,7 @@ export class Group {
 
   addMember(memberId: string): void {
     if (this.#memberIds.includes(memberId)) {
-      throw new InvalidGroupError(`"${memberId}" is already a member of this group`);
+      throw new DuplicateMemberError(`"${memberId}" is already a member of this group`);
     }
     this.#memberIds.push(memberId);
   }
