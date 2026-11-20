@@ -1,0 +1,38 @@
+name: chain
+
+on:
+  push:
+    paths:
+      - "apps/chain/**"
+      - ".github/workflows/chain.yml"
+  pull_request:
+    paths:
+      - "apps/chain/**"
+      - ".github/workflows/chain.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: chain-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  forge:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/chain
+    steps:
+      - uses: actions/checkout@v4
+      - uses: foundry-rs/foundry-toolchain@v1
+      - name: Install dependencies (Soldeer, pinned by soldeer.lock)
+        run: forge soldeer install
+      - name: Format
+        run: forge fmt --check
+      - name: Build
+        run: forge build --sizes
+      - name: Test
+        run: forge test -vv
+      - name: Gas snapshot
+        run: forge snapshot --check

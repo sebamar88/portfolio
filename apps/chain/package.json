@@ -1,0 +1,6 @@
+{
+  "name": "@portfolio/chain",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Solidity (Foundry) contracts for on-chain debt settlement. Run via scripts/forge.sh (Docker), see README. Intentionally has NO test/build/lint scripts so `pnpm -r test` never needs Docker/Foundry."
+}
