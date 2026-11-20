@@ -26,6 +26,16 @@ export class Group {
     return new Group(props.id, name, []);
   }
 
+  /**
+   * Rebuilds a group that was already stored (used by repositories). It goes through the same
+   * rules as creating one, so corrupted stored data fails loudly instead of entering the domain.
+   */
+  static restore(props: { id: string; name: string; memberIds: readonly string[] }): Group {
+    const group = Group.create({ id: props.id, name: props.name });
+    for (const memberId of props.memberIds) group.addMember(memberId);
+    return group;
+  }
+
   /** A frozen copy: callers can read the members but never change them behind addMember's back. */
   get memberIds(): readonly string[] {
     return Object.freeze([...this.#memberIds]);
