@@ -1,0 +1,43 @@
+{
+  "name": "@portfolio/realtime",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "pnpm --filter @portfolio/events build && nest start --watch",
+    "build": "pnpm --filter @portfolio/events build && tsc --noEmit && nest build",
+    "start": "node dist/main.js",
+    "test": "pnpm --filter @portfolio/events build && vitest run",
+    "lint": "oxlint src test"
+  },
+  "dependencies": {
+    "@nestjs/bullmq": "^12.0.2",
+    "@nestjs/common": "^12.5.1",
+    "@nestjs/core": "^12.5.1",
+    "@nestjs/platform-express": "^12.5.1",
+    "@nestjs/platform-socket.io": "^12.5.1",
+    "@nestjs/websockets": "^12.5.1",
+    "@portfolio/events": "workspace:*",
+    "@socket.io/redis-adapter": "^8.3.0",
+    "bullmq": "^6.7.8",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.15.1",
+    "ioredis": "^6.0.0",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.2",
+    "socket.io": "^4.8.4"
+  },
+  "devDependencies": {
+    "@nestjs/cli": "^12.0.13",
+    "@nestjs/testing": "^12.5.1",
+    "@swc/cli": "^0.8.2",
+    "@swc/core": "^1.16.22",
+    "@testcontainers/redis": "^12.2.2",
+    "@types/node": "^24.19.2",
+    "@types/supertest": "^7.2.1",
+    "oxlint": "^1.94.0",
+    "socket.io-client": "^4.8.4",
+    "supertest": "^7.3.2",
+    "typescript": "~6.0.3",
+    "vitest": "^5.1.1"
+  }
+}
