@@ -1,0 +1,61 @@
+name: Realtime
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'apps/realtime/**'
+      - 'packages/events/**'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - 'pnpm-workspace.yaml'
+      - '.github/workflows/realtime.yml'
+  pull_request:
+    paths:
+      - 'apps/realtime/**'
+      - 'packages/events/**'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - 'pnpm-workspace.yaml'
+      - '.github/workflows/realtime.yml'
+  workflow_dispatch:
+
+# A newer push cancels a stale run of the same branch instead of queueing behind it.
+concurrency:
+  group: realtime-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: Lint, build, test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 12.4.1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      # One lockfile for the whole workspace: always install from the repo root.
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm --filter @portfolio/events --filter @portfolio/realtime lint
+
+      # events: tsc to dist (CommonJS); realtime: type check + SWC build.
+      - name: Build
+        run: pnpm --filter @portfolio/events --filter @portfolio/realtime build
+
+      # The integration tests start Redis through Testcontainers (Docker is available on the runner).
+      - name: Test
+        run: pnpm --filter @portfolio/events --filter @portfolio/realtime test

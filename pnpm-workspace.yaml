@@ -15,3 +15,5 @@ allowBuilds:
   protobufjs: false
   # Swagger UI's install hook only sends analytics; not needed.
   "@scarf/scarf": false
+  # BullMQ's optional native msgpack accelerator; it falls back to pure JS.
+  msgpackr-extract: false
