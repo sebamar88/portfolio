@@ -1,10 +1,13 @@
 import { type ArgumentsHost, Catch, type ExceptionFilter, HttpStatus } from '@nestjs/common';
 import { GroupNotFoundError } from '../../application/errors/group-not-found.error';
+import { InvalidPaginationError } from '../../application/errors/invalid-pagination.error';
+import { NotGroupMemberError } from '../../application/errors/not-group-member.error';
 import { InvalidBalancesError } from '../../domain/balances/invalid-balances.error';
 import { InvalidExpenseError } from '../../domain/expenses/invalid-expense.error';
 import { InvalidSplitError } from '../../domain/expenses/invalid-split.error';
 import { DuplicateMemberError } from '../../domain/groups/duplicate-member.error';
 import { InvalidGroupError } from '../../domain/groups/invalid-group.error';
+import { InvalidAmountError } from './money';
 
 // The only part of the Express response we use (avoids depending on Express types directly).
 interface JsonResponse {
@@ -22,6 +25,9 @@ interface JsonResponse {
   InvalidSplitError,
   InvalidBalancesError,
   GroupNotFoundError,
+  NotGroupMemberError,
+  InvalidPaginationError,
+  InvalidAmountError,
 )
 export class DomainExceptionFilter implements ExceptionFilter {
   catch(error: Error, host: ArgumentsHost): void {

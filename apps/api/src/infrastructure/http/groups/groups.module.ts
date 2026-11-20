@@ -19,5 +19,7 @@ import { GroupsController } from './groups.controller';
     { provide: GROUP_REPOSITORY, useClass: PostgresGroupRepository },
     { provide: ID_GENERATOR, useClass: UuidIdGenerator },
   ],
+  // Other modules (expenses) reuse the same adapters instead of creating their own.
+  exports: [GROUP_REPOSITORY, ID_GENERATOR],
 })
 export class GroupsModule {}

@@ -9,6 +9,7 @@ import request from 'supertest';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { AppModule } from '../src/app.module';
 import { configureApp } from '../src/configure-app';
+import { expensesHttpSuite } from './support/expenses-http-suite';
 import { groups } from '../src/infrastructure/persistence/postgres/schema';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
@@ -112,3 +113,5 @@ describe('groups (e2e, real Postgres)', () => {
     expect(rows.rows).toEqual([{ name: 'Trip', member_id: 'ana' }]);
   });
 });
+
+expensesHttpSuite('real Postgres', () => app);

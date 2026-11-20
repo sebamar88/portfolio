@@ -36,6 +36,38 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/groups/{id}/balances": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getBalances"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/groups/{id}/expenses": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["listExpenses"];
+        put?: never;
+        post: operations["addExpense"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/groups/{id}/members": {
         parameters: {
             query?: never;
@@ -46,6 +78,22 @@ export interface paths {
         get?: never;
         put?: never;
         post: operations["addMember"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/groups/{id}/settlements": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getSettlements"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -72,8 +120,31 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        AddExpenseDto: {
+            /**
+             * @description Decimal text in USD with at most 2 decimals.
+             * @example 12.50
+             */
+            amount: string;
+            /** @description Trimmed; must not be blank. */
+            description: string;
+            /**
+             * @description Day it was paid, as YYYY-MM-DD.
+             * @example 2026-05-20
+             */
+            paidAt: string;
+            /** @description Members who share the cost. Defaults to every member. */
+            participantIds?: string[];
+            payerId: string;
+        };
         AddMemberDto: {
             memberId: string;
+        };
+        BalancesResponse: {
+            /** @description One entry per member, in the order they joined. */
+            balances: components["schemas"]["MemberBalanceResponse"][];
+            /** @enum {string} */
+            currency: "USD";
         };
         CreateGroupDto: {
             /** @description Trimmed; must not be blank. */
@@ -86,10 +157,57 @@ export interface components {
             /** @example 400 */
             statusCode: number;
         };
+        ExpensePageResponse: {
+            items: components["schemas"]["ExpenseResponse"][];
+            /** @description Pass as `cursor` to get the next page; null on the last page. */
+            nextCursor: string | null;
+        };
+        ExpenseResponse: {
+            /**
+             * @description Cents.
+             * @example 1250
+             */
+            amount: number;
+            /** Format: date-time */
+            createdAt: string;
+            /** @enum {string} */
+            currency: "USD";
+            description: string;
+            groupId: string;
+            id: string;
+            /**
+             * @description YYYY-MM-DD.
+             * @example 2026-05-20
+             */
+            paidAt: string;
+            payerId: string;
+            shares: components["schemas"]["ShareResponse"][];
+        };
         GroupResponse: {
             id: string;
             memberIds: string[];
             name: string;
+        };
+        MemberBalanceResponse: {
+            /** @description Cents. Positive: is owed money. Negative: owes money. */
+            amount: number;
+            memberId: string;
+        };
+        SettlementsResponse: {
+            /** @enum {string} */
+            currency: "USD";
+            transfers: components["schemas"]["TransferResponse"][];
+        };
+        ShareResponse: {
+            /** @description Cents. */
+            amount: number;
+            memberId: string;
+        };
+        TransferResponse: {
+            /** @description Cents, always more than 0. */
+            amount: number;
+            from: string;
+            to: string;
         };
     };
     responses: never;
@@ -160,6 +278,117 @@ export interface operations {
             };
         };
     };
+    getBalances: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BalancesResponse"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    listExpenses: {
+        parameters: {
+            query?: {
+                limit?: number;
+                /** @description Opaque value from `nextCursor` of the previous page. */
+                cursor?: string;
+            };
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExpensePageResponse"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    addExpense: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AddExpenseDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExpenseResponse"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
     addMember: {
         parameters: {
             query?: never;
@@ -200,6 +429,35 @@ export interface operations {
                 };
             };
             409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    getSettlements: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SettlementsResponse"];
+                };
+            };
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };

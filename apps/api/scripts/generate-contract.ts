@@ -6,8 +6,9 @@ import { writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { Test } from '@nestjs/testing';
 import { AppModule } from '../src/app.module';
-import { GROUP_REPOSITORY } from '../src/application/ports/tokens';
+import { EXPENSE_REPOSITORY, GROUP_REPOSITORY } from '../src/application/ports/tokens';
 import { DATABASE } from '../src/infrastructure/database/database.module';
+import { InMemoryExpenseRepository } from '../src/infrastructure/persistence/in-memory-expense.repository';
 import { InMemoryGroupRepository } from '../src/infrastructure/persistence/in-memory-group.repository';
 import { buildOpenApiDocument } from '../src/openapi';
 import { fakeDatabase } from '../test/support/fake-database';
@@ -31,6 +32,8 @@ async function main() {
   const moduleRef = await Test.createTestingModule({ imports: [AppModule] })
     .overrideProvider(GROUP_REPOSITORY)
     .useValue(new InMemoryGroupRepository())
+    .overrideProvider(EXPENSE_REPOSITORY)
+    .useValue(new InMemoryExpenseRepository())
     .overrideProvider(DATABASE)
     .useValue(fakeDatabase)
     .compile();

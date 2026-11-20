@@ -3,10 +3,12 @@ import { Test } from '@nestjs/testing';
 import request from 'supertest';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { AppModule } from '../src/app.module';
-import { GROUP_REPOSITORY } from '../src/application/ports/tokens';
+import { EXPENSE_REPOSITORY, GROUP_REPOSITORY } from '../src/application/ports/tokens';
 import { configureApp } from '../src/configure-app';
 import { DATABASE } from '../src/infrastructure/database/database.module';
+import { InMemoryExpenseRepository } from '../src/infrastructure/persistence/in-memory-expense.repository';
 import { InMemoryGroupRepository } from '../src/infrastructure/persistence/in-memory-group.repository';
+import { expensesHttpSuite } from './support/expenses-http-suite';
 import { fakeDatabase } from './support/fake-database';
 
 let app: INestApplication;
@@ -17,6 +19,8 @@ beforeAll(async () => {
   const moduleRef = await Test.createTestingModule({ imports: [AppModule] })
     .overrideProvider(GROUP_REPOSITORY)
     .useValue(new InMemoryGroupRepository())
+    .overrideProvider(EXPENSE_REPOSITORY)
+    .useValue(new InMemoryExpenseRepository())
     .overrideProvider(DATABASE)
     .useValue(fakeDatabase)
     .compile();
@@ -47,3 +51,5 @@ describe('groups (e2e, in-memory repository)', () => {
     await request(app.getHttpServer()).get('/groups/nope').expect(404);
   });
 });
+
+expensesHttpSuite('in-memory repository', () => app);

@@ -22,7 +22,7 @@ const groupWithExpenses = fc
   )
   .map(([, rawExpenses]): Expense[] =>
     rawExpenses.map(({ payerId, total, participants }) =>
-      Expense.create({ payerId, total, shares: splitEqually(total, participants) }),
+      Expense.create({ id: 'e', groupId: 'g', description: 'Shared', paidAt: '2026-05-21', payerId, total, shares: splitEqually(total, participants) }),
     ),
   );
 

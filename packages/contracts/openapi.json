@@ -1,6 +1,42 @@
 {
   "components": {
     "schemas": {
+      "AddExpenseDto": {
+        "properties": {
+          "amount": {
+            "description": "Decimal text in USD with at most 2 decimals.",
+            "example": "12.50",
+            "type": "string"
+          },
+          "description": {
+            "description": "Trimmed; must not be blank.",
+            "maxLength": 120,
+            "type": "string"
+          },
+          "paidAt": {
+            "description": "Day it was paid, as YYYY-MM-DD.",
+            "example": "2026-05-20",
+            "type": "string"
+          },
+          "participantIds": {
+            "description": "Members who share the cost. Defaults to every member.",
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "payerId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "description",
+          "amount",
+          "payerId",
+          "paidAt"
+        ],
+        "type": "object"
+      },
       "AddMemberDto": {
         "properties": {
           "memberId": {
@@ -9,6 +45,28 @@
         },
         "required": [
           "memberId"
+        ],
+        "type": "object"
+      },
+      "BalancesResponse": {
+        "properties": {
+          "balances": {
+            "description": "One entry per member, in the order they joined.",
+            "items": {
+              "$ref": "#/components/schemas/MemberBalanceResponse"
+            },
+            "type": "array"
+          },
+          "currency": {
+            "enum": [
+              "USD"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "currency",
+          "balances"
         ],
         "type": "object"
       },
@@ -56,6 +114,80 @@
         ],
         "type": "object"
       },
+      "ExpensePageResponse": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/ExpenseResponse"
+            },
+            "type": "array"
+          },
+          "nextCursor": {
+            "description": "Pass as `cursor` to get the next page; null on the last page.",
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "required": [
+          "items",
+          "nextCursor"
+        ],
+        "type": "object"
+      },
+      "ExpenseResponse": {
+        "properties": {
+          "amount": {
+            "description": "Cents.",
+            "example": 1250,
+            "type": "integer"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "currency": {
+            "enum": [
+              "USD"
+            ],
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "groupId": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          },
+          "paidAt": {
+            "description": "YYYY-MM-DD.",
+            "example": "2026-05-20",
+            "type": "string"
+          },
+          "payerId": {
+            "type": "string"
+          },
+          "shares": {
+            "items": {
+              "$ref": "#/components/schemas/ShareResponse"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "groupId",
+          "description",
+          "amount",
+          "currency",
+          "payerId",
+          "shares",
+          "paidAt",
+          "createdAt"
+        ],
+        "type": "object"
+      },
       "GroupResponse": {
         "properties": {
           "id": {
@@ -75,6 +207,79 @@
           "id",
           "name",
           "memberIds"
+        ],
+        "type": "object"
+      },
+      "MemberBalanceResponse": {
+        "properties": {
+          "amount": {
+            "description": "Cents. Positive: is owed money. Negative: owes money.",
+            "type": "integer"
+          },
+          "memberId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "memberId",
+          "amount"
+        ],
+        "type": "object"
+      },
+      "SettlementsResponse": {
+        "properties": {
+          "currency": {
+            "enum": [
+              "USD"
+            ],
+            "type": "string"
+          },
+          "transfers": {
+            "items": {
+              "$ref": "#/components/schemas/TransferResponse"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "currency",
+          "transfers"
+        ],
+        "type": "object"
+      },
+      "ShareResponse": {
+        "properties": {
+          "amount": {
+            "description": "Cents.",
+            "type": "integer"
+          },
+          "memberId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "memberId",
+          "amount"
+        ],
+        "type": "object"
+      },
+      "TransferResponse": {
+        "properties": {
+          "amount": {
+            "description": "Cents, always more than 0.",
+            "type": "integer"
+          },
+          "from": {
+            "type": "string"
+          },
+          "to": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "from",
+          "to",
+          "amount"
         ],
         "type": "object"
       }
@@ -171,6 +376,177 @@
         ]
       }
     },
+    "/groups/{id}/balances": {
+      "get": {
+        "operationId": "getBalances",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BalancesResponse"
+                }
+              }
+            },
+            "description": ""
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "summary": "",
+        "tags": [
+          "balances"
+        ]
+      }
+    },
+    "/groups/{id}/expenses": {
+      "get": {
+        "operationId": "listExpenses",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 20,
+              "maximum": 100,
+              "minimum": 1,
+              "type": "integer"
+            }
+          },
+          {
+            "description": "Opaque value from `nextCursor` of the previous page.",
+            "in": "query",
+            "name": "cursor",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExpensePageResponse"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": ""
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "summary": "",
+        "tags": [
+          "expenses"
+        ]
+      },
+      "post": {
+        "operationId": "addExpense",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddExpenseDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExpenseResponse"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": ""
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "summary": "",
+        "tags": [
+          "expenses"
+        ]
+      }
+    },
     "/groups/{id}/members": {
       "post": {
         "operationId": "addMember",
@@ -239,6 +615,47 @@
         "summary": "",
         "tags": [
           "groups"
+        ]
+      }
+    },
+    "/groups/{id}/settlements": {
+      "get": {
+        "operationId": "getSettlements",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SettlementsResponse"
+                }
+              }
+            },
+            "description": ""
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "summary": "",
+        "tags": [
+          "balances"
         ]
       }
     },

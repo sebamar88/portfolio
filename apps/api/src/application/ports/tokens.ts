@@ -2,3 +2,5 @@
 // These Symbols are the runtime keys that stand in for the ports.
 export const GROUP_REPOSITORY = Symbol('GROUP_REPOSITORY');
 export const ID_GENERATOR = Symbol('ID_GENERATOR');
+export const EXPENSE_REPOSITORY = Symbol('EXPENSE_REPOSITORY');
+export const CLOCK = Symbol('CLOCK');
