@@ -1,0 +1,30 @@
+{
+  "name": "@portfolio/contracts",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    ".": "./src/client.ts",
+    "./schema": "./src/schema.ts",
+    "./openapi.json": "./openapi.json",
+    "./mock": "./src/mock/handlers.ts",
+    "./mock/node": "./src/mock/node.ts"
+  },
+  "scripts": {
+    "generate": "openapi-typescript openapi.json -o src/schema.ts",
+    "build": "tsc --noEmit",
+    "lint": "oxlint src test",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "msw": "^3.0.7",
+    "openapi-fetch": "^0.17.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.19.2",
+    "openapi-typescript": "^7.13.0",
+    "oxlint": "^1.94.0",
+    "typescript": "~6.0.3",
+    "vitest": "^5.1.1"
+  }
+}

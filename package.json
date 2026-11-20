@@ -10,6 +10,7 @@
     "ds": "pnpm --filter @portfolio/design-system",
     "lint": "pnpm -r --if-present lint",
     "test": "pnpm -r --if-present test",
-    "build": "pnpm -r --if-present build"
+    "build": "pnpm -r --if-present build",
+    "contract:generate": "pnpm --filter @portfolio/api contract:generate && pnpm --filter @portfolio/contracts generate"
   }
 }

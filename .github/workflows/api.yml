@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - 'apps/api/**'
+      - 'packages/contracts/**'
       - 'package.json'
       - 'pnpm-lock.yaml'
       - 'pnpm-workspace.yaml'
@@ -12,6 +13,7 @@ on:
   pull_request:
     paths:
       - 'apps/api/**'
+      - 'packages/contracts/**'
       - 'package.json'
       - 'pnpm-lock.yaml'
       - 'pnpm-workspace.yaml'
@@ -61,3 +63,13 @@ jobs:
 
       - name: Test
         run: pnpm test
+
+      # The committed contract must match what the API code generates today.
+      - name: Contract is up to date
+        run: |
+          pnpm contract:generate
+          git diff --exit-code -- packages/contracts || {
+            echo "::error::packages/contracts is out of date. Run 'pnpm contract:generate' and commit the result."
+            exit 1
+          }
+        working-directory: .

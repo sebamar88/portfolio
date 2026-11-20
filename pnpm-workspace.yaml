@@ -13,3 +13,5 @@ allowBuilds:
   ssh2: false
   # Its postinstall only checks its own version scheme.
   protobufjs: false
+  # Swagger UI's install hook only sends analytics; not needed.
+  "@scarf/scarf": false
